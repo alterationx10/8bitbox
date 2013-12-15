@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import java.util.Arrays;
@@ -22,11 +23,11 @@ public class MainActivity extends Activity {
     Button btnDisconnect;
     Button btnOver;
     Button btnUnder;
-    Button btnRed;
-    Button btnGreen;
-    Button btnBlue;
-    Button btnAll;
-    Button btnOff;
+
+
+    SeekBar redSeeker;
+    SeekBar greenSeeker;
+    SeekBar blueSeekr;
 
     String TAG = "8BitActivity";
 
@@ -43,6 +44,8 @@ public class MainActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        MAC = BoxConstants.MARK_MAC;
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
@@ -74,11 +77,7 @@ public class MainActivity extends Activity {
         btnDisconnect = (Button)findViewById(R.id.btnDisconnect);
         btnOver = (Button)findViewById(R.id.btnOver);
         btnUnder = (Button)findViewById(R.id.btnUnder);
-        btnRed = (Button)findViewById(R.id.btnRed);
-        btnGreen = (Button)findViewById(R.id.btnGreen);
-        btnBlue = (Button)findViewById(R.id.btnBlue);
-        btnAll = (Button)findViewById(R.id.btnRGB);
-        btnOff = (Button)findViewById(R.id.btnOff);
+
 
         btnConnect.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -137,42 +136,67 @@ public class MainActivity extends Activity {
             }
         });
 
-        btnRed.setOnClickListener(new View.OnClickListener() {
+
+
+        redSeeker = (SeekBar)findViewById(R.id.seekRed);
+        redSeeker.setMax(255);
+        redSeeker.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onClick(View v) {
-                myService.writeData(BoxConstants.RED_ON);
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                byte[]setLevel = {BoxConstants.RED_ON[0], (byte) progress};
+                myService.writeData(setLevel);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
             }
         });
 
-        btnGreen.setOnClickListener(new View.OnClickListener() {
+        greenSeeker = (SeekBar)findViewById(R.id.seekGreen);
+        greenSeeker.setMax(255);
+        greenSeeker.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onClick(View v) {
-                myService.writeData(BoxConstants.GREEN_ON);
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                byte[]setLevel = {BoxConstants.GREEN_ON[0], (byte) progress};
+                myService.writeData(setLevel);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
             }
         });
 
-        btnBlue.setOnClickListener(new View.OnClickListener() {
+        blueSeekr = (SeekBar)findViewById(R.id.seekBlue);
+        blueSeekr.setMax(255);
+        blueSeekr.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onClick(View v) {
-                myService.writeData(BoxConstants.BLUE_ON);
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                byte[]setLevel = {BoxConstants.BLUE_ON[0], (byte) progress};
+                myService.writeData(setLevel);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
             }
         });
-
-        btnAll.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myService.writeData(BoxConstants.ALL_ON);
-            }
-        });
-
-        btnOff.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                myService.writeData(BoxConstants.ALL_OFF);
-            }
-        });
-
-
 
 
     }
@@ -232,6 +256,9 @@ public class MainActivity extends Activity {
         dialog = builder.create();
         dialog.show();
     }
+
+
+
 
 }
 

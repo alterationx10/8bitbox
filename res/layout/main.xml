@@ -25,30 +25,27 @@
             android:layout_height="wrap_content"
             android:text="Underworld"
             android:id="@+id/btnUnder" android:layout_below="@+id/btnOver" android:layout_centerHorizontal="true"/>
-    <Button
+
+     <SeekBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Red"
-            android:id="@+id/btnRed" android:layout_below="@+id/btnUnder" android:layout_centerHorizontal="true"/>
-    <Button
+            android:id="@+id/seekRed" android:layout_below="@+id/btnUnder" android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"/>
+
+    <SeekBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Green"
-            android:id="@+id/btnGreen" android:layout_below="@+id/btnRed" android:layout_centerHorizontal="true"/>
-    <Button
+            android:id="@+id/seekGreen"
+            android:layout_below="@+id/seekRed"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"/>
+
+    <SeekBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Blue"
-            android:id="@+id/btnBlue" android:layout_below="@+id/btnGreen" android:layout_centerHorizontal="true"/>
-    <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="RGB"
-            android:id="@+id/btnRGB" android:layout_below="@+id/btnBlue" android:layout_centerHorizontal="true"/>
-    <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Off"
-            android:id="@+id/btnOff" android:layout_below="@+id/btnRGB" android:layout_centerHorizontal="true"/>
+            android:id="@+id/seekBlue"
+            android:layout_below="@+id/seekGreen"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"/>
 </RelativeLayout>
 

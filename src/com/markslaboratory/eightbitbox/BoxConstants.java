@@ -4,11 +4,11 @@ package com.markslaboratory.eightbitbox;
 public class BoxConstants {
 
     // These are commands sent to the Arduino
-    static byte[] PLAY_OVERWORLD    = "A".getBytes();
-    static byte[] PLAY_UNDERWORLD   = "B".getBytes();
-    static byte[] RED_ON            = "C".getBytes();
-    static byte[] GREEN_ON          = "D".getBytes();
-    static byte[] BLUE_ON           = "E".getBytes();
+    static byte[] PLAY_OVERWORLD    = "a".getBytes();
+    static byte[] PLAY_UNDERWORLD   = "b".getBytes();
+    static byte[] RED_ON            = "R".getBytes();
+    static byte[] GREEN_ON          = "G".getBytes();
+    static byte[] BLUE_ON           = "B".getBytes();
     static byte[] ALL_ON            = "F".getBytes();
     static byte[] ALL_OFF           = "G".getBytes();
 
