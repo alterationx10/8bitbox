@@ -6,18 +6,22 @@ import android.app.Dialog;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.content.*;
+import android.graphics.Color;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Toast;
 
 import java.util.Arrays;
 
 public class MainActivity extends Activity {
+
+    ImageView bitBox;
 
     Button btnConnect;
     Button btnDisconnect;
@@ -33,8 +37,9 @@ public class MainActivity extends Activity {
 
     // Our bluetooth service
     BluetoothService myService;
+    ServiceConnection mConnection;
 
-    String MAC = "00:18:96:B0:06:DB";
+    String MAC;
 
     NfcAdapter nfcAdapter;
 
@@ -54,7 +59,7 @@ public class MainActivity extends Activity {
         }
 
         // We need to bind to our service, so lets go ahead and do that
-        ServiceConnection mConnection = new ServiceConnection() {
+        mConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 genericDialog("Service connected! The app should work now :-)");
@@ -79,6 +84,8 @@ public class MainActivity extends Activity {
         btnUnder = (Button)findViewById(R.id.btnUnder);
 
 
+        bitBox = (ImageView)findViewById(R.id.ivBox);
+        bitBox.setBackgroundColor(Color.BLUE);
         btnConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -86,6 +93,8 @@ public class MainActivity extends Activity {
                     @Override
                     public void doOnConnect() {
                         genericDialog("Connected!");
+                        setSeekerStatus(true);
+
                     }
 
                     @Override
@@ -117,6 +126,7 @@ public class MainActivity extends Activity {
                     @Override
                     public void doOnDisconnect() {
                         genericDialog("Disconnected!");
+                        setSeekerStatus(false);
                     }
                 });
             }
@@ -140,31 +150,38 @@ public class MainActivity extends Activity {
 
         redSeeker = (SeekBar)findViewById(R.id.seekRed);
         redSeeker.setMax(255);
+        redSeeker.setProgress(0);
         redSeeker.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 byte[]setLevel = {BoxConstants.RED_ON[0], (byte) progress};
                 myService.writeData(setLevel);
+                setBitBoxColor();
             }
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                byte[] beep = {"Z".getBytes()[0], 0x08, 0x2d, (byte) 12};
+                myService.writeData(beep);
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-
+                byte[] beep = {"Z".getBytes()[0], 0x00, (byte) 12};
+                myService.writeData(beep);
             }
         });
 
         greenSeeker = (SeekBar)findViewById(R.id.seekGreen);
         greenSeeker.setMax(255);
+        greenSeeker.setProgress(0);
         greenSeeker.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 byte[]setLevel = {BoxConstants.GREEN_ON[0], (byte) progress};
                 myService.writeData(setLevel);
+                setBitBoxColor();
+
             }
 
             @Override
@@ -180,11 +197,14 @@ public class MainActivity extends Activity {
 
         blueSeekr = (SeekBar)findViewById(R.id.seekBlue);
         blueSeekr.setMax(255);
+        blueSeekr.setProgress(0);
         blueSeekr.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 byte[]setLevel = {BoxConstants.BLUE_ON[0], (byte) progress};
                 myService.writeData(setLevel);
+                setBitBoxColor();
+
             }
 
             @Override
@@ -198,6 +218,8 @@ public class MainActivity extends Activity {
             }
         });
 
+        // Seekers are disabled until connected
+        setSeekerStatus(false);
 
     }
 
@@ -224,6 +246,11 @@ public class MainActivity extends Activity {
 
     }
 
+
+    @Override
+    protected void onStop() {
+        unbindService(mConnection);
+    }
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -257,6 +284,23 @@ public class MainActivity extends Activity {
         dialog.show();
     }
 
+
+    public void setBitBoxColor() {
+        int red = redSeeker.getProgress();
+        int green = greenSeeker.getProgress();
+        int blue = blueSeekr.getProgress();
+
+        int bgColor = Color.argb(255, red, green, blue);
+
+        bitBox.setBackgroundColor(bgColor);
+
+    }
+
+    public void setSeekerStatus(boolean status) {
+        redSeeker.setEnabled(status);
+        greenSeeker.setEnabled(status);
+        blueSeekr.setEnabled(status);
+    }
 
 
 

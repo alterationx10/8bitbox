@@ -30,6 +30,7 @@ public class BluetoothService extends Service {
     public OutputStream oStream;
 
 
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -164,7 +165,7 @@ public class BluetoothService extends Service {
 
     public boolean writeData(byte[] data) {
         // Don't bother if we're not connected
-        if (!btSocket.isConnected()) {
+        if (btSocket == null || !btSocket.isConnected()) {
             return false;
         }
 
@@ -190,6 +191,7 @@ public class BluetoothService extends Service {
         public void doOnDataRead(byte[] theData);
         public  void doOnReadFail();
     }
+
 
     // Empty callbacks, in case the user doesn't want to implement one.
     private BluetoothConnectCallback emptyCallback = new BluetoothConnectCallback() {
@@ -242,5 +244,15 @@ public class BluetoothService extends Service {
         return mBinder;
     }
 
+    public boolean isConnected() {
+        if (btSocket != null) {
+            if (btSocket.isConnected()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        return false;
+    }
 
 }
