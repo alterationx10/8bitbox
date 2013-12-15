@@ -62,7 +62,7 @@ public class MainActivity extends Activity {
         mConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
-                genericDialog("Service connected! The app should work now :-)");
+//                genericDialog("Service connected! The app should work now :-)");
             }
 
             @Override
@@ -98,7 +98,7 @@ public class MainActivity extends Activity {
                     }
 
                     @Override
-                    public void doOnCOnnectionFailed() {
+                    public void doOnConnectionFailed() {
                         genericDialog("Connection Failed!");
                     }
 
@@ -119,7 +119,7 @@ public class MainActivity extends Activity {
                     }
 
                     @Override
-                    public void doOnCOnnectionFailed() {
+                    public void doOnConnectionFailed() {
 
                     }
 
@@ -142,7 +142,11 @@ public class MainActivity extends Activity {
         btnUnder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                myService.writeData(BoxConstants.PLAY_UNDERWORLD);
+//                myService.writeData(BoxConstants.PLAY_UNDERWORLD);
+                if (myService.isConnected()) {
+                MarioMusic mario = new MarioMusic(myService);
+                mario.playUnderworld();
+                }
             }
         });
 
@@ -161,14 +165,12 @@ public class MainActivity extends Activity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                byte[] beep = {"Z".getBytes()[0], 0x08, 0x2d, (byte) 12};
-                myService.writeData(beep);
+
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                byte[] beep = {"Z".getBytes()[0], 0x00, (byte) 12};
-                myService.writeData(beep);
+
             }
         });
 
@@ -249,6 +251,7 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onStop() {
+        super.onStop();
         unbindService(mConnection);
     }
 

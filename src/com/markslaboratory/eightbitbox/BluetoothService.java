@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by mark on 12/7/13.
@@ -28,6 +31,8 @@ public class BluetoothService extends Service {
     public BluetoothDevice btDevice;
     public InputStream iStream;
     public OutputStream oStream;
+
+    public ExecutorService commService;
 
 
 
@@ -88,7 +93,7 @@ public class BluetoothService extends Service {
         } catch (IOException e) {
             Log.d(TAG,"Failed to open the bluetooth socket...");
             // Trigger the fail method
-            myCallback.doOnCOnnectionFailed();
+            myCallback.doOnConnectionFailed();
             return false;
         }
 
@@ -103,11 +108,12 @@ public class BluetoothService extends Service {
         } catch (IOException e) {
             Log.d(TAG, "Failed to connect to the bluetooth socket, or open the I/O streams...");
             // Trigger the fail method
-            myCallback.doOnCOnnectionFailed();
+            myCallback.doOnConnectionFailed();
             return false;
         }
 
         // If we've made it this far, everything is good to go!
+        commService = Executors.newSingleThreadExecutor();
         return true;
     }
 
@@ -124,6 +130,7 @@ public class BluetoothService extends Service {
                 iStream.close();
                 oStream.close();
                 btSocket.close();
+                commService.shutdown();
             } catch (IOException e) {
                 Log.d(TAG,"Had trouble properly closing down the I/O and Bluetooth socket...");
             }
@@ -181,7 +188,7 @@ public class BluetoothService extends Service {
     /////// CALLBACKS for bluetooth stuff. You don't need to implement anything in them, but you'll probably want to
     public interface BluetoothConnectCallback {
         public void doOnConnect();
-        public  void doOnCOnnectionFailed();
+        public  void doOnConnectionFailed();
         public void doOnDisconnect();
     }
 
@@ -201,7 +208,7 @@ public class BluetoothService extends Service {
         }
 
         @Override
-        public void doOnCOnnectionFailed() {
+        public void doOnConnectionFailed() {
 
         }
 
