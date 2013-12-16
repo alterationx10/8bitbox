@@ -39,6 +39,9 @@ public class MainActivity extends Activity {
     BluetoothService myService;
     ServiceConnection mConnection;
 
+
+    MarioMusic marioMusic;
+
     String MAC;
 
     NfcAdapter nfcAdapter;
@@ -62,7 +65,7 @@ public class MainActivity extends Activity {
         mConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
-//                genericDialog("Service connected! The app should work now :-)");
+                marioMusic = new MarioMusic(myService);
             }
 
             @Override
@@ -94,7 +97,6 @@ public class MainActivity extends Activity {
                     public void doOnConnect() {
                         genericDialog("Connected!");
                         setSeekerStatus(true);
-
                     }
 
                     @Override
@@ -135,17 +137,17 @@ public class MainActivity extends Activity {
         btnOver.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                myService.writeData(BoxConstants.PLAY_OVERWORLD);
+                if (myService.isConnected()) {
+                    marioMusic.playOverworld();
+                }
             }
         });
 
         btnUnder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                myService.writeData(BoxConstants.PLAY_UNDERWORLD);
                 if (myService.isConnected()) {
-                MarioMusic mario = new MarioMusic(myService);
-                mario.playUnderworld();
+                    marioMusic.playUnderworld();
                 }
             }
         });
@@ -222,6 +224,8 @@ public class MainActivity extends Activity {
 
         // Seekers are disabled until connected
         setSeekerStatus(false);
+
+        setBitBoxColor();
 
     }
 

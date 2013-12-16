@@ -17,9 +17,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/**
- * Created by mark on 12/7/13.
- */
+
 public class BluetoothService extends Service {
 
     // For logging
@@ -168,6 +166,18 @@ public class BluetoothService extends Service {
             Log.d(TAG,"Trouble reading from device!");
            return null;
         }
+    }
+
+    public byte rawRead() {
+        if (btSocket == null || !btSocket.isConnected()) {
+            return 0x00;
+        }
+        try {
+            return (byte) (iStream.read() & 0xff);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return 0x00;
     }
 
     public boolean writeData(byte[] data) {

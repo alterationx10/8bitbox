@@ -1,9 +1,13 @@
 package com.markslaboratory.eightbitbox;
 
 
-import android.os.AsyncTask;
-import android.util.Log;
-
+/**
+ * A Class that plays Mario songs/sounds over the piezo buzzer
+ *
+ * The overworld and underworld notes/tempo were adapted from the arduino sketch
+ * provided by Dipto Pratyaksa at
+ * http://www.linuxcircle.com/2013/03/31/playing-mario-bros-tune-with-arduino-and-piezo-buzzer/
+ */
 public class MarioMusic {
 
     private BluetoothService myBox;
@@ -12,7 +16,61 @@ public class MarioMusic {
         this.myBox = myBox;
     }
 
-    int underworld[] = {
+    private int overworld[] = {
+            Tone.NOTE_E7, Tone.NOTE_E7, 0, Tone.NOTE_E7,
+            0, Tone.NOTE_C7, Tone.NOTE_E7, 0,
+            Tone.NOTE_G7, 0, 0,  0,
+            Tone.NOTE_G6, 0, 0, 0,
+
+            Tone.NOTE_C7, 0, 0, Tone.NOTE_G6,
+            0, 0, Tone.NOTE_E6, 0,
+            0, Tone.NOTE_A6, 0, Tone.NOTE_B6,
+            0, Tone.NOTE_AS6, Tone.NOTE_A6, 0,
+
+            Tone.NOTE_G6, Tone.NOTE_E7, Tone.NOTE_G7,
+            Tone.NOTE_A7, 0, Tone.NOTE_F7, Tone.NOTE_G7,
+            0, Tone.NOTE_E7, 0, Tone.NOTE_C7,
+            Tone.NOTE_D7, Tone.NOTE_B6, 0, 0,
+
+            Tone.NOTE_C7, 0, 0, Tone.NOTE_G6,
+            0, 0, Tone.NOTE_E6, 0,
+            0, Tone.NOTE_A6, 0, Tone.NOTE_B6,
+            0, Tone.NOTE_AS6, Tone.NOTE_A6, 0,
+
+            Tone.NOTE_G6, Tone.NOTE_E7, Tone.NOTE_G7,
+            Tone.NOTE_A7, 0, Tone.NOTE_F7, Tone.NOTE_G7,
+            0, Tone.NOTE_E7, 0, Tone.NOTE_C7,
+            Tone.NOTE_D7, Tone.NOTE_B6, 0, 0
+    };
+
+    private int overworld_tempo[] = {
+            12, 12, 12, 12,
+            12, 12, 12, 12,
+            12, 12, 12, 12,
+            12, 12, 12, 12,
+
+            12, 12, 12, 12,
+            12, 12, 12, 12,
+            12, 12, 12, 12,
+            12, 12, 12, 12,
+
+            9, 9, 9,
+            12, 12, 12, 12,
+            12, 12, 12, 12,
+            12, 12, 12, 12,
+
+            12, 12, 12, 12,
+            12, 12, 12, 12,
+            12, 12, 12, 12,
+            12, 12, 12, 12,
+
+            9, 9, 9,
+            12, 12, 12, 12,
+            12, 12, 12, 12,
+            12, 12, 12, 12,
+    };
+
+    private int underworld[] = {
             Tone.NOTE_C4, Tone.NOTE_C5, Tone.NOTE_A3, Tone.NOTE_A4,
             Tone.NOTE_AS3, Tone.NOTE_AS4, 0,
             0,
@@ -34,7 +92,7 @@ public class MarioMusic {
             0, 0, 0
     };
 
-    int underworld_tempo[] = {
+    private int underworld_tempo[] = {
             12, 12, 12, 12,
             12, 12, 6,
             3,
@@ -58,23 +116,6 @@ public class MarioMusic {
 
 
     public void playUnderworld() {
-        Runnable playUnderworldRunnable = new Runnable() {
-            @Override
-            public void run() {
-                for (int i=0; i < underworld.length; i++) {
-                    byte[] note = {"Z".getBytes()[0], Tone.toneMSB(underworld[i]), Tone.toneLSB(underworld[i]),
-                            (byte) underworld_tempo[i]};
-                    myBox.writeData(note);
-                    // We need a small delay so we don't overload the Arduino (it will skip notes)
-                    // 200 ms seems to be a good number.
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        };
 
         myBox.commService.execute(new Runnable() {
             @Override
@@ -83,18 +124,39 @@ public class MarioMusic {
                     byte[] note = {"Z".getBytes()[0], Tone.toneMSB(underworld[i]), Tone.toneLSB(underworld[i]),
                             (byte) underworld_tempo[i]};
                     myBox.writeData(note);
-                    // We need a small delay so we don't overload the Arduino (it will skip notes)
-                    // 200 ms seems to be a good number.
-                    try {
-                        Thread.sleep(200);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                    // For everything but the last note
+                    if (i != underworld.length -1) {
+                        while(myBox.rawRead() != "z".getBytes()[0]) {
+                            // Block until we get feedback that we're ready for the next note
+                        }
                     }
+
                 }
             }
         });
     }
 
 
+    public void playOverworld() {
+
+        myBox.commService.execute(new Runnable() {
+            @Override
+            public void run() {
+                for (int i=0; i < overworld.length; i++) {
+                    byte[] note = {"Z".getBytes()[0], Tone.toneMSB(overworld[i]), Tone.toneLSB(overworld[i]),
+                            (byte) overworld_tempo[i]};
+                    myBox.writeData(note);
+
+                    // For everything but the last note
+                    if (i != overworld.length -1) {
+
+                        while(myBox.rawRead() != "z".getBytes()[0]) {
+                            // Block until we get feedback that we're ready for the next note
+                        }
+                    }
+                }
+            }
+        });
+    }
 
 }
