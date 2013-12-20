@@ -11,6 +11,7 @@ import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -38,6 +39,9 @@ public class MainActivity extends Activity {
     // Our bluetooth service
     BluetoothService myService;
     ServiceConnection mConnection;
+    boolean isBound;
+
+    SharedPreferences myPreferences;
 
 
     MarioMusic marioMusic;
@@ -53,10 +57,21 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        MAC = BoxConstants.MARK_MAC;
+        myPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+
+        // Reset for testing
+        SharedPreferences.Editor tester = myPreferences.edit();
+        tester.clear();
+        tester.commit();
+
+
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
+        if (!nfcAdapter.isEnabled()) {
+            genericDialog("NFC isn't enabled... \n You might want to turn it on...");
+
+        }
         if(!BluetoothAdapter.getDefaultAdapter().isEnabled()) {
             genericDialog("Bluetooth isn't enabled... \n You might want to turn it on...");
         }
@@ -65,16 +80,19 @@ public class MainActivity extends Activity {
         mConnection = new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
+                isBound = true;
                 marioMusic = new MarioMusic(myService);
             }
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
+                isBound = false;
                 genericDialog("Service disconnected!");
             }
         };
 
         myService = new BluetoothService();
+        isBound = false;
         // Don't forget we need to decalre the Service (and Bluetooth permission) in the manifest file.
         Intent myIntent = new Intent(getApplicationContext(), BluetoothService.class);
         bindService(myIntent, mConnection, Context.BIND_AUTO_CREATE);
@@ -241,6 +259,14 @@ public class MainActivity extends Activity {
         IntentFilter[] filters = new IntentFilter[] { tagDetected };
 
         nfcAdapter.enableForegroundDispatch(this, pendingIntent, filters, null);
+
+        // We always need a MAC
+        MAC = myPreferences.getString(BoxConstants.STORED_MAC, "");
+        if (MAC.equals("")) {
+            Intent setup = new Intent(this, SetupActivity.class);
+            startActivity(setup);
+        }
+
     }
 
     @Override
@@ -254,9 +280,29 @@ public class MainActivity extends Activity {
 
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        unbindService(mConnection);
+    protected void onDestroy() {
+        super.onDestroy();
+        if (myService.isConnected()) {
+            myService.btDisconnect(new BluetoothService.BluetoothConnectCallback() {
+                @Override
+                public void doOnConnect() {
+
+                }
+
+                @Override
+                public void doOnConnectionFailed() {
+
+                }
+
+                @Override
+                public void doOnDisconnect() {
+
+                }
+            });
+        }
+        if (isBound) {
+            unbindService(mConnection);
+        }
     }
 
     @Override
