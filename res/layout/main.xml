@@ -4,32 +4,48 @@
               android:layout_width="fill_parent"
               android:layout_height="fill_parent"
         >
-    <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Connect"
-            android:id="@+id/btnConnect" android:layout_centerVertical="true" android:layout_centerHorizontal="true"/>
-    <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+    <ImageButton
+            android:layout_width="75dp"
+            android:layout_height="50dp"
+            android:scaleType="fitCenter"
             android:text="Disconnect"
-            android:id="@+id/btnDisconnect" android:layout_below="@+id/btnConnect"
-            android:layout_centerHorizontal="true"/>
-    <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/btnDisconnect"
+            android:src="@drawable/ss"
+            android:layout_above="@+id/btnOver"
+            android:layout_alignRight="@+id/btnOver"
+            android:layout_alignLeft="@+id/btnOver"/>
+    <ImageButton
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="fitCenter"
             android:text="Overworld"
-            android:id="@+id/btnOver" android:layout_below="@+id/btnDisconnect" android:layout_centerHorizontal="true"/>
-    <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Underworld"
-            android:id="@+id/btnUnder" android:layout_below="@+id/btnOver" android:layout_centerHorizontal="true"/>
+            android:id="@+id/btnOver"
+            android:src="@drawable/b_button" android:layout_below="@+id/dUp" android:layout_toLeftOf="@+id/btnUnder"/>
 
-     <SeekBar
+    <ImageButton
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:scaleType="fitCenter"
+            android:text="Underworld"
+            android:id="@+id/btnUnder"
+            android:src="@drawable/a_button" android:layout_below="@+id/dUp" android:layout_alignParentRight="true"/>
+
+    <ImageButton
+            android:layout_width="75dp"
+            android:layout_height="50dp"
+            android:scaleType="fitCenter"
+            android:text="Connect"
+            android:id="@+id/btnConnect"
+            android:src="@drawable/ss"
+            android:layout_alignTop="@+id/btnDisconnect"
+            android:layout_toRightOf="@+id/btnOver"
+            android:layout_alignRight="@+id/btnUnder"/>
+    <SeekBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/seekRed" android:layout_below="@+id/btnUnder" android:layout_alignParentRight="true"
+            android:id="@+id/seekRed"
+            android:layout_below="@+id/ivBox"
+            android:layout_alignParentRight="true"
             android:layout_alignParentLeft="true"/>
 
     <SeekBar
@@ -58,5 +74,69 @@
             android:src="@drawable/icon_transparent"
 
             />
+    <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/spacer"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:src="@drawable/d_button"
+            android:visibility="invisible"
+            />
+
+    <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/dDown"
+            android:src="@drawable/d_button" android:layout_alignParentBottom="true"
+            android:layout_toRightOf="@+id/spacer"/>
+
+    <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/dLeft"
+            android:src="@drawable/d_button"
+            android:layout_above="@+id/spacer"
+            android:layout_alignParentLeft="true"/>
+
+    <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/dMiddle"
+            android:src="@drawable/d_button"
+            android:layout_alignTop="@+id/dLeft"
+            android:layout_toRightOf="@+id/dLeft"/>
+
+    <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/dUp"
+            android:src="@drawable/d_button"
+            android:layout_above="@+id/dLeft"
+            android:layout_toRightOf="@+id/dLeft"/>
+    <ImageButton
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:id="@+id/dRight"
+            android:src="@drawable/d_button"
+            android:layout_below="@+id/dUp"
+            android:layout_toRightOf="@id/dMiddle"/>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Select"
+            android:gravity="center"
+            android:id="@+id/textView" android:layout_above="@+id/btnDisconnect"
+            android:layout_alignLeft="@+id/btnDisconnect" android:layout_alignRight="@+id/ivBox"/>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Start"
+            android:gravity="center"
+            android:id="@+id/textView2" android:layout_above="@+id/btnConnect"
+            android:layout_toRightOf="@+id/btnDisconnect" android:layout_alignRight="@+id/btnConnect"/>
+
 </RelativeLayout>
 

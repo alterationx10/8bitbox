@@ -13,10 +13,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.view.View;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.SeekBar;
-import android.widget.Toast;
+import android.widget.*;
 
 import java.util.Arrays;
 
@@ -24,10 +21,10 @@ public class MainActivity extends Activity {
 
     ImageView bitBox;
 
-    Button btnConnect;
-    Button btnDisconnect;
-    Button btnOver;
-    Button btnUnder;
+    ImageButton btnConnect;
+    ImageButton btnDisconnect;
+    ImageButton btnOver;
+    ImageButton btnUnder;
 
 
     SeekBar redSeeker;
@@ -99,10 +96,10 @@ public class MainActivity extends Activity {
         // Our service should bind now; We will see the dialogs above whe it's all ready;
 
 
-        btnConnect = (Button)findViewById(R.id.btnConnect);
-        btnDisconnect = (Button)findViewById(R.id.btnDisconnect);
-        btnOver = (Button)findViewById(R.id.btnOver);
-        btnUnder = (Button)findViewById(R.id.btnUnder);
+        btnConnect = (ImageButton)findViewById(R.id.btnConnect);
+        btnDisconnect = (ImageButton)findViewById(R.id.btnDisconnect);
+        btnOver = (ImageButton)findViewById(R.id.btnOver);
+        btnUnder = (ImageButton)findViewById(R.id.btnUnder);
 
 
         bitBox = (ImageView)findViewById(R.id.ivBox);
@@ -115,6 +112,7 @@ public class MainActivity extends Activity {
                     public void doOnConnect() {
                         genericDialog("Connected!");
                         setSeekerStatus(true);
+                        setBitBoxLEDs();
                     }
 
                     @Override
@@ -185,7 +183,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                setBitBoxLEDs();
             }
 
             @Override
@@ -208,7 +206,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                setBitBoxLEDs();
             }
 
             @Override
@@ -231,7 +229,7 @@ public class MainActivity extends Activity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-
+                setBitBoxLEDs();
             }
 
             @Override
@@ -337,6 +335,22 @@ public class MainActivity extends Activity {
         dialog.show();
     }
 
+    /*
+    Used to set all 3 LEDS at once
+     */
+    public void setBitBoxLEDs() {
+        int red = redSeeker.getProgress();
+        int green = greenSeeker.getProgress();
+        int blue = blueSeekr.getProgress();
+
+        byte[]setRedLevel = {BoxConstants.RED_ON[0], (byte) red};
+        byte[]setGreenLevel = {BoxConstants.GREEN_ON[0], (byte) green};
+        byte[]setBlueLevel = {BoxConstants.BLUE_ON[0], (byte) blue};
+        myService.writeData(setRedLevel);
+        myService.writeData(setGreenLevel);
+        myService.writeData(setBlueLevel);
+
+    }
 
     public void setBitBoxColor() {
         int red = redSeeker.getProgress();
