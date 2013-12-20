@@ -1,6 +1,8 @@
 package com.markslaboratory.eightbitbox;
 
 
+import android.app.ActionBar;
+
 /**
  * A Class that plays Mario songs/sounds over the piezo buzzer
  *
@@ -11,6 +13,16 @@ package com.markslaboratory.eightbitbox;
 public class MarioMusic {
 
     private BluetoothService myBox;
+
+    public ActionBar getActivityActionBar() {
+        return activityActionBar;
+    }
+
+    public void setActivityActionBar(ActionBar activityActionBar) {
+        this.activityActionBar = activityActionBar;
+    }
+
+    private ActionBar activityActionBar;
 
     public MarioMusic(BluetoothService myBox) {
         this.myBox = myBox;
@@ -120,6 +132,7 @@ public class MarioMusic {
         myBox.commService.execute(new Runnable() {
             @Override
             public void run() {
+                activityActionBar.setIcon(R.drawable.music);
                 for (int i=0; i < underworld.length; i++) {
                     byte[] note = {"Z".getBytes()[0], Tone.toneMSB(underworld[i]), Tone.toneLSB(underworld[i]),
                             (byte) underworld_tempo[i]};
@@ -132,6 +145,12 @@ public class MarioMusic {
                     }
 
                 }
+                if (myBox.isConnected()) {
+                    activityActionBar.setIcon(R.drawable.connected);
+                }
+                else {
+                    activityActionBar.setIcon(R.drawable.not_connected);
+                }
             }
         });
     }
@@ -142,6 +161,7 @@ public class MarioMusic {
         myBox.commService.execute(new Runnable() {
             @Override
             public void run() {
+                activityActionBar.setIcon(R.drawable.music);
                 for (int i=0; i < overworld.length; i++) {
                     byte[] note = {"Z".getBytes()[0], Tone.toneMSB(overworld[i]), Tone.toneLSB(overworld[i]),
                             (byte) overworld_tempo[i]};
@@ -154,6 +174,12 @@ public class MarioMusic {
                             // Block until we get feedback that we're ready for the next note
                         }
                     }
+                }
+                if (myBox.isConnected()) {
+                    activityActionBar.setIcon(R.drawable.connected);
+                }
+                else {
+                    activityActionBar.setIcon(R.drawable.not_connected);
                 }
             }
         });

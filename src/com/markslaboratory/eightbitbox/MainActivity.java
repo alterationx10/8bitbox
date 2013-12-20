@@ -66,11 +66,11 @@ public class MainActivity extends Activity {
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
         if (!nfcAdapter.isEnabled()) {
-            genericDialog("NFC isn't enabled... \n You might want to turn it on...");
+            genericDialog("NFC isn't enabled... \n You might want to turn it on...", R.drawable.not_connected);
 
         }
         if(!BluetoothAdapter.getDefaultAdapter().isEnabled()) {
-            genericDialog("Bluetooth isn't enabled... \n You might want to turn it on...");
+            genericDialog("Bluetooth isn't enabled... \n You might want to turn it on...", R.drawable.not_connected);
         }
 
         // We need to bind to our service, so lets go ahead and do that
@@ -79,12 +79,15 @@ public class MainActivity extends Activity {
             public void onServiceConnected(ComponentName name, IBinder service) {
                 isBound = true;
                 marioMusic = new MarioMusic(myService);
+                marioMusic.setActivityActionBar(getActionBar());
+
+                getActionBar().setTitle(getTitle() + " | P1 Press Start");
             }
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
                 isBound = false;
-                genericDialog("Service disconnected!");
+                genericDialog("Service disconnected!", R.drawable.ic_launcher);
             }
         };
 
@@ -110,14 +113,17 @@ public class MainActivity extends Activity {
                 myService.btConnect(MAC, new BluetoothService.BluetoothConnectCallback() {
                     @Override
                     public void doOnConnect() {
-                        genericDialog("Connected!");
+                        getActionBar().setIcon(R.drawable.connected);
+                        getActionBar().setTitle(getTitle() + " Test");
+                        genericDialog("Connected!", R.drawable.connected);
                         setSeekerStatus(true);
                         setBitBoxLEDs();
                     }
 
                     @Override
                     public void doOnConnectionFailed() {
-                        genericDialog("Connection Failed!");
+                        genericDialog("Connection Failed!", R.drawable.not_connected);
+                        setSeekerStatus(false);
                     }
 
                     @Override
@@ -143,7 +149,8 @@ public class MainActivity extends Activity {
 
                     @Override
                     public void doOnDisconnect() {
-                        genericDialog("Disconnected!");
+                        getActionBar().setIcon(R.drawable.not_connected);
+                        genericDialog("Disconnected!", R.drawable.not_connected);
                         setSeekerStatus(false);
                     }
                 });
@@ -319,11 +326,11 @@ public class MainActivity extends Activity {
         Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
     }
 
-    public void genericDialog(String msg) {
+    public void genericDialog(String msg, int iconDrawable) {
         Dialog dialog;
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
         builder.setTitle("A Wild Message Appears!");
-        builder.setIcon(R.drawable.ic_launcher);
+        builder.setIcon(iconDrawable);
         builder.setMessage(msg);
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override

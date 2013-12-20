@@ -122,7 +122,7 @@ public class BluetoothService extends Service {
         }
 
         // This is an API 14 if statement! Won't work on older devices!
-        if (btSocket.isConnected()) {
+        if (btSocket != null && btSocket.isConnected()) {
             try {
                 // Try and close down the I/O streams and close the socket.
                 iStream.close();
