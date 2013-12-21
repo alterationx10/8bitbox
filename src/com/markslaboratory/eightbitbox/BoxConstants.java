@@ -6,13 +6,11 @@ import java.util.Arrays;
 public class BoxConstants {
 
     // These are commands sent to the Arduino
-    static byte[] PLAY_OVERWORLD    = "a".getBytes();
-    static byte[] PLAY_UNDERWORLD   = "b".getBytes();
-    static byte[] RED_ON            = "R".getBytes();
-    static byte[] GREEN_ON          = "G".getBytes();
-    static byte[] BLUE_ON           = "B".getBytes();
-    static byte[] ALL_ON            = "F".getBytes();
-    static byte[] ALL_OFF           = "G".getBytes();
+    static byte[] RED = "R".getBytes();
+    static byte[] GREEN = "G".getBytes();
+    static byte[] BLUE = "B".getBytes();
+    static byte[] MUSIC = "Z".getBytes();
+    static byte[] MUSIC_RESPONSE = "z".getBytes();
 
 
     static byte[] JODY_NFC = {0x72, 0x02, 0x27, (byte) 0xca};
@@ -31,4 +29,8 @@ public class BoxConstants {
     static String STORED_NFC = "STORED_NFC";
     static String STORED_MAC = "STORED_MAC";
     static String NO_NFC = "NO_NFC";
+    static String HAS_FAVORITE = "HAS_FAVORITE";
+    static String FAVORITE_RED = "FAVORITE_RED";
+    static String FAVORITE_GREEN = "FAVORITE_GREEN";
+    static String FAVORITE_BLUE = "FAVORITE_BLUE";
 }

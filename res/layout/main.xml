@@ -9,25 +9,25 @@
             android:layout_height="50dp"
             android:scaleType="fitCenter"
             android:text="Disconnect"
-            android:id="@+id/btnDisconnect"
+            android:id="@+id/btnSelect"
             android:src="@drawable/ss"
-            android:layout_above="@+id/btnOver"
-            android:layout_alignRight="@+id/btnOver"
-            android:layout_alignLeft="@+id/btnOver"/>
+            android:layout_above="@+id/btnB"
+            android:layout_alignRight="@+id/btnB"
+            android:layout_alignLeft="@+id/btnB"/>
     <ImageButton
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:scaleType="fitCenter"
             android:text="Overworld"
-            android:id="@+id/btnOver"
-            android:src="@drawable/b_button" android:layout_below="@+id/dUp" android:layout_toLeftOf="@+id/btnUnder"/>
+            android:id="@+id/btnB"
+            android:src="@drawable/b_button" android:layout_below="@+id/dUp" android:layout_toLeftOf="@+id/btnA"/>
 
     <ImageButton
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:scaleType="fitCenter"
             android:text="Underworld"
-            android:id="@+id/btnUnder"
+            android:id="@+id/btnA"
             android:src="@drawable/a_button" android:layout_below="@+id/dUp" android:layout_alignParentRight="true"/>
 
     <ImageButton
@@ -35,11 +35,11 @@
             android:layout_height="50dp"
             android:scaleType="fitCenter"
             android:text="Connect"
-            android:id="@+id/btnConnect"
+            android:id="@+id/btnStart"
             android:src="@drawable/ss"
-            android:layout_alignTop="@+id/btnDisconnect"
-            android:layout_toRightOf="@+id/btnOver"
-            android:layout_alignRight="@+id/btnUnder"/>
+            android:layout_alignTop="@+id/btnSelect"
+            android:layout_toRightOf="@+id/btnB"
+            android:layout_alignRight="@+id/btnA"/>
     <SeekBar
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -127,16 +127,16 @@
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Select"
             android:gravity="center"
-            android:id="@+id/textView" android:layout_above="@+id/btnDisconnect"
-            android:layout_alignLeft="@+id/btnDisconnect" android:layout_alignRight="@+id/ivBox"/>
+            android:id="@+id/textView" android:layout_above="@+id/btnSelect"
+            android:layout_alignLeft="@+id/btnSelect" android:layout_alignRight="@+id/ivBox"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Start"
             android:gravity="center"
-            android:id="@+id/textView2" android:layout_above="@+id/btnConnect"
-            android:layout_toRightOf="@+id/btnDisconnect" android:layout_alignRight="@+id/btnConnect"/>
+            android:id="@+id/textView2" android:layout_above="@+id/btnStart"
+            android:layout_toRightOf="@+id/btnSelect" android:layout_alignRight="@+id/btnStart"/>
 
 </RelativeLayout>
 

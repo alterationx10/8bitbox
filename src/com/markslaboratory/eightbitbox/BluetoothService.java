@@ -128,7 +128,9 @@ public class BluetoothService extends Service {
                 iStream.close();
                 oStream.close();
                 btSocket.close();
-                commService.shutdown();
+                if (commService != null && !commService.isShutdown()) {
+                    commService.shutdown();
+                }
             } catch (IOException e) {
                 Log.d(TAG,"Had trouble properly closing down the I/O and Bluetooth socket...");
             }

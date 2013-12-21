@@ -9,6 +9,7 @@ import android.content.*;
 import android.graphics.Color;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -21,11 +22,15 @@ public class MainActivity extends Activity {
 
     ImageView bitBox;
 
-    ImageButton btnConnect;
-    ImageButton btnDisconnect;
-    ImageButton btnOver;
-    ImageButton btnUnder;
+    ImageButton start;
+    ImageButton select;
+    ImageButton b;
+    ImageButton a;
 
+    ImageButton up;
+    ImageButton down;
+    ImageButton left;
+    ImageButton right;
 
     SeekBar redSeeker;
     SeekBar greenSeeker;
@@ -48,6 +53,7 @@ public class MainActivity extends Activity {
     NfcAdapter nfcAdapter;
 
 
+    boolean code[] = new boolean[7];
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,13 +61,6 @@ public class MainActivity extends Activity {
         setContentView(R.layout.main);
 
         myPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-
-        // Reset for testing
-        SharedPreferences.Editor tester = myPreferences.edit();
-        tester.clear();
-        tester.commit();
-
-
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
@@ -79,7 +78,6 @@ public class MainActivity extends Activity {
             public void onServiceConnected(ComponentName name, IBinder service) {
                 isBound = true;
                 marioMusic = new MarioMusic(myService);
-                marioMusic.setActivityActionBar(getActionBar());
 
                 getActionBar().setTitle(getTitle() + " | P1 Press Start");
             }
@@ -99,17 +97,64 @@ public class MainActivity extends Activity {
         // Our service should bind now; We will see the dialogs above whe it's all ready;
 
 
-        btnConnect = (ImageButton)findViewById(R.id.btnConnect);
-        btnDisconnect = (ImageButton)findViewById(R.id.btnDisconnect);
-        btnOver = (ImageButton)findViewById(R.id.btnOver);
-        btnUnder = (ImageButton)findViewById(R.id.btnUnder);
+        start = (ImageButton)findViewById(R.id.btnStart);
+        select = (ImageButton)findViewById(R.id.btnSelect);
+        b = (ImageButton)findViewById(R.id.btnB);
+        a = (ImageButton)findViewById(R.id.btnA);
 
+        up = (ImageButton)findViewById(R.id.dUp);
+        down = (ImageButton)findViewById(R.id.dDown);
+        left = (ImageButton)findViewById(R.id.dLeft);
+        right = (ImageButton)findViewById(R.id.dRight);
 
-        bitBox = (ImageView)findViewById(R.id.ivBox);
-        bitBox.setBackgroundColor(Color.BLUE);
-        btnConnect.setOnClickListener(new View.OnClickListener() {
+        up.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                codeSequence(0);
+            }
+        });
+
+        down.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                codeSequence(1);
+            }
+        });
+
+        left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                codeSequence(2);
+            }
+        });
+        right.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                codeSequence(3);
+            }
+        });
+
+        bitBox = (ImageView)findViewById(R.id.ivBox);
+        bitBox.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                SharedPreferences.Editor editor = myPreferences.edit();
+                editor.clear();
+                editor.commit();
+                Intent setup = new Intent(MainActivity.this, SetupActivity.class);
+                startActivity(setup);
+                return false;
+            }
+        });
+        bitBox.setBackgroundColor(Color.BLUE);
+        start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (codeSequence(6)) {
+                    resetCode();
+                    codeValidated();
+                    return;
+                }
                 myService.btConnect(MAC, new BluetoothService.BluetoothConnectCallback() {
                     @Override
                     public void doOnConnect() {
@@ -133,7 +178,7 @@ public class MainActivity extends Activity {
             }
         });
 
-        btnDisconnect.setOnClickListener(new View.OnClickListener() {
+        select.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 myService.btDisconnect(new BluetoothService.BluetoothConnectCallback() {
@@ -157,20 +202,26 @@ public class MainActivity extends Activity {
             }
         });
 
-        btnOver.setOnClickListener(new View.OnClickListener() {
+        b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (codeSequence(4)) {
+                    return;
+                }
                 if (myService.isConnected()) {
-                    marioMusic.playOverworld();
+                    marioMusic.playOverworld(MainActivity.this);
                 }
             }
         });
 
-        btnUnder.setOnClickListener(new View.OnClickListener() {
+        a.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (codeSequence(5)) {
+                    return;
+                }
                 if (myService.isConnected()) {
-                    marioMusic.playUnderworld();
+                    marioMusic.playUnderworld(MainActivity.this);
                 }
             }
         });
@@ -183,7 +234,7 @@ public class MainActivity extends Activity {
         redSeeker.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                byte[]setLevel = {BoxConstants.RED_ON[0], (byte) progress};
+                byte[]setLevel = {BoxConstants.RED[0], (byte) progress};
                 myService.writeData(setLevel);
                 setBitBoxColor();
             }
@@ -205,7 +256,7 @@ public class MainActivity extends Activity {
         greenSeeker.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                byte[]setLevel = {BoxConstants.GREEN_ON[0], (byte) progress};
+                byte[]setLevel = {BoxConstants.GREEN[0], (byte) progress};
                 myService.writeData(setLevel);
                 setBitBoxColor();
 
@@ -228,7 +279,7 @@ public class MainActivity extends Activity {
         blueSeekr.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                byte[]setLevel = {BoxConstants.BLUE_ON[0], (byte) progress};
+                byte[]setLevel = {BoxConstants.BLUE[0], (byte) progress};
                 myService.writeData(setLevel);
                 setBitBoxColor();
 
@@ -313,17 +364,20 @@ public class MainActivity extends Activity {
     @Override
     protected void onNewIntent(Intent intent) {
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
-
-        String msg = "Not Found!";
-        if (Arrays.equals(tag.getId(), BoxConstants.JODY_NFC)) {
-            msg = "Jody";
-        } else if (Arrays.equals(tag.getId(), BoxConstants.MARC_NFC)) {
-            msg = "Marc";
-        } else if (Arrays.equals(tag.getId(), BoxConstants.MARK_NFC)) {
-            msg = "Mark";
+        if (tag.getId() == null) {
+            Toast.makeText(this,"Bad NFC!", Toast.LENGTH_SHORT).show();
+            return;
         }
-
-        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+        String tagString = Arrays.toString(tag.getId());
+        String nfcString = myPreferences.getString(BoxConstants.STORED_NFC, BoxConstants.NO_NFC);
+        if (tagString.equals(nfcString)) {
+            Toast.makeText(this,"Setting favorite color!", Toast.LENGTH_SHORT).show();
+            FavoriteHelper favoriteHelper = new FavoriteHelper();
+            favoriteHelper.execute();
+        }
+        else {
+            Toast.makeText(this,"Unrecognized NFC!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void genericDialog(String msg, int iconDrawable) {
@@ -350,9 +404,9 @@ public class MainActivity extends Activity {
         int green = greenSeeker.getProgress();
         int blue = blueSeekr.getProgress();
 
-        byte[]setRedLevel = {BoxConstants.RED_ON[0], (byte) red};
-        byte[]setGreenLevel = {BoxConstants.GREEN_ON[0], (byte) green};
-        byte[]setBlueLevel = {BoxConstants.BLUE_ON[0], (byte) blue};
+        byte[]setRedLevel = {BoxConstants.RED[0], (byte) red};
+        byte[]setGreenLevel = {BoxConstants.GREEN[0], (byte) green};
+        byte[]setBlueLevel = {BoxConstants.BLUE[0], (byte) blue};
         myService.writeData(setRedLevel);
         myService.writeData(setGreenLevel);
         myService.writeData(setBlueLevel);
@@ -377,6 +431,134 @@ public class MainActivity extends Activity {
     }
 
 
+    boolean codeSequence(int btn) {
+        // Check for out of range
+        // Should only be given 0-6 (code.length should be 7)
+        if (btn > code.length -1 || btn < 0) {
+            resetCode();
+            return false;
+        }
 
+        if (btn == 0) {
+            resetCode();
+            code[0] = true;
+            return true;
+        }
+
+        // This will fire if the previous value is true
+        // And reset the whole array otherwise
+        if (code[btn - 1]) {
+            code[btn] = true;
+            return true;
+        }
+        else {
+            resetCode();
+            return false;
+        }
+    }
+
+    void codeValidated() {
+
+        SharedPreferences.Editor editor = myPreferences.edit();
+        editor.putBoolean(BoxConstants.HAS_FAVORITE, true);
+        editor.putInt(BoxConstants.FAVORITE_RED, redSeeker.getProgress());
+        editor.putInt(BoxConstants.FAVORITE_GREEN, greenSeeker.getProgress());
+        editor.putInt(BoxConstants.FAVORITE_BLUE, blueSeekr.getProgress());
+        editor.commit();
+        String msg = "";
+        msg += "You've entered the secret code!\n\n";
+        msg += "I have saved the current LED settings as your new favorite color!\n\n";
+        msg += "Now whenever you tap the NFC part of your 8BitBox, I will set the LEDs to your favorite color.\n\n";
+        msg += "If you're not connected, I'll even connect, change the color, and then disconnect again. What a " +
+                "deal!\n\n";
+        msg += "Enter the code again any time to set a new favorite color!";
+        genericDialog(msg, R.drawable.ic_launcher);
+    }
+
+    void resetCode() {
+        for (int i = 0; i < code.length; i++) {
+            code[i] = false;
+        }
+    }
+
+    class FavoriteHelper extends AsyncTask<Void, Void, Void> {
+
+        int red;
+        int green;
+        int blue;
+        int bgColor;
+        boolean hasResponded;
+        boolean didConnect;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            red = myPreferences.getInt(BoxConstants.FAVORITE_RED, 0);
+            green = myPreferences.getInt(BoxConstants.FAVORITE_GREEN, 0);
+            blue = myPreferences.getInt(BoxConstants.FAVORITE_BLUE, 0);
+            bgColor = Color.argb(255, red, green, blue);
+
+            bitBox.setBackgroundColor(bgColor);
+            redSeeker.setProgress(red);
+            greenSeeker.setProgress(green);
+            blueSeekr.setProgress(blue);
+
+            hasResponded = false;
+            didConnect = false;
+
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            if (myService.isConnected()) {
+                didConnect = true;
+                restoreFavorite();
+            }
+            else {
+
+                BluetoothService.BluetoothConnectCallback myCallback = new BluetoothService.BluetoothConnectCallback() {
+                    @Override
+                    public void doOnConnect() {
+                        restoreFavorite();
+                        didConnect = true;
+                        myService.btDisconnect(this);
+                    }
+
+                    @Override
+                    public void doOnConnectionFailed() {
+
+                    }
+
+                    @Override
+                    public void doOnDisconnect() {
+                        hasResponded = true;
+                    }
+                };
+
+                myService.btConnect(MAC, myCallback);
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (!didConnect) {
+                genericDialog("Didn't connect!", R.drawable.not_connected);
+            }
+        }
+
+        void restoreFavorite() {
+            byte[]setRedLevel = {BoxConstants.RED[0], (byte) red};
+            byte[]setGreenLevel = {BoxConstants.GREEN[0], (byte) green};
+            byte[]setBlueLevel = {BoxConstants.BLUE[0], (byte) blue};
+            myService.writeData(setRedLevel);
+            myService.writeData(setGreenLevel);
+            myService.writeData(setBlueLevel);
+        }
+    }
 }
 

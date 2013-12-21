@@ -1,7 +1,7 @@
 package com.markslaboratory.eightbitbox;
 
 
-import android.app.ActionBar;
+import android.app.Activity;
 
 /**
  * A Class that plays Mario songs/sounds over the piezo buzzer
@@ -13,16 +13,6 @@ import android.app.ActionBar;
 public class MarioMusic {
 
     private BluetoothService myBox;
-
-    public ActionBar getActivityActionBar() {
-        return activityActionBar;
-    }
-
-    public void setActivityActionBar(ActionBar activityActionBar) {
-        this.activityActionBar = activityActionBar;
-    }
-
-    private ActionBar activityActionBar;
 
     public MarioMusic(BluetoothService myBox) {
         this.myBox = myBox;
@@ -127,60 +117,79 @@ public class MarioMusic {
     };
 
 
-    public void playUnderworld() {
+    public void playUnderworld(final Activity runningActivity) {
 
         myBox.commService.execute(new Runnable() {
             @Override
             public void run() {
-                activityActionBar.setIcon(R.drawable.music);
+                runningActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        runningActivity.getActionBar().setIcon(R.drawable.music);
+                    }
+                });
                 for (int i=0; i < underworld.length; i++) {
-                    byte[] note = {"Z".getBytes()[0], Tone.toneMSB(underworld[i]), Tone.toneLSB(underworld[i]),
+                    byte[] note = {BoxConstants.MUSIC[0], Tone.toneMSB(underworld[i]), Tone.toneLSB(underworld[i]),
                             (byte) underworld_tempo[i]};
                     myBox.writeData(note);
                     // For everything but the last note
                     if (i != underworld.length -1) {
-                        while(myBox.rawRead() != "z".getBytes()[0]) {
+                        while(myBox.rawRead() != BoxConstants.MUSIC_RESPONSE[0]) {
                             // Block until we get feedback that we're ready for the next note
                         }
                     }
 
                 }
-                if (myBox.isConnected()) {
-                    activityActionBar.setIcon(R.drawable.connected);
-                }
-                else {
-                    activityActionBar.setIcon(R.drawable.not_connected);
-                }
+                runningActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (myBox.isConnected()) {
+                            runningActivity.getActionBar().setIcon(R.drawable.connected);
+                        }
+                        else {
+                            runningActivity.getActionBar().setIcon(R.drawable.not_connected);
+                        }                    }
+                });
+
             }
         });
     }
 
 
-    public void playOverworld() {
+    public void playOverworld(final Activity runningActivity) {
 
         myBox.commService.execute(new Runnable() {
             @Override
             public void run() {
-                activityActionBar.setIcon(R.drawable.music);
+                runningActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        runningActivity.getActionBar().setIcon(R.drawable.music);
+                    }
+                });
                 for (int i=0; i < overworld.length; i++) {
-                    byte[] note = {"Z".getBytes()[0], Tone.toneMSB(overworld[i]), Tone.toneLSB(overworld[i]),
+                    byte[] note = {BoxConstants.MUSIC[0], Tone.toneMSB(overworld[i]), Tone.toneLSB(overworld[i]),
                             (byte) overworld_tempo[i]};
                     myBox.writeData(note);
 
                     // For everything but the last note
                     if (i != overworld.length -1) {
 
-                        while(myBox.rawRead() != "z".getBytes()[0]) {
+                        while(myBox.rawRead() != BoxConstants.MUSIC_RESPONSE[0]) {
                             // Block until we get feedback that we're ready for the next note
                         }
                     }
                 }
-                if (myBox.isConnected()) {
-                    activityActionBar.setIcon(R.drawable.connected);
-                }
-                else {
-                    activityActionBar.setIcon(R.drawable.not_connected);
-                }
+                runningActivity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (myBox.isConnected()) {
+                            runningActivity.getActionBar().setIcon(R.drawable.connected);
+                        }
+                        else {
+                            runningActivity.getActionBar().setIcon(R.drawable.not_connected);
+                        }                    }
+                });
             }
         });
     }
