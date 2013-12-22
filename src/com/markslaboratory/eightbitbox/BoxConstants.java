@@ -13,6 +13,7 @@ public class BoxConstants {
     static byte[] MUSIC_RESPONSE = "z".getBytes();
 
 
+    // Settings constants for 8BitBixes I've made for people
     static byte[] JODY_NFC = {0x72, 0x02, 0x27, (byte) 0xca};
     static String JODY_NFC_STRING = Arrays.toString(JODY_NFC);
     static String JODY_MAC = "00:18:96:B0:06:DB";

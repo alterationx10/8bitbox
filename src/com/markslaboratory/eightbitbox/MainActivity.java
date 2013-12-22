@@ -64,7 +64,7 @@ public class MainActivity extends Activity {
 
         nfcAdapter = NfcAdapter.getDefaultAdapter(this);
 
-        if (!nfcAdapter.isEnabled()) {
+        if (nfcAdapter!= null && !nfcAdapter.isEnabled()) {
             genericDialog("NFC isn't enabled... \n You might want to turn it on...", R.drawable.not_connected);
 
         }
@@ -168,7 +168,7 @@ public class MainActivity extends Activity {
                     @Override
                     public void doOnConnectionFailed() {
                         genericDialog("Connection Failed!", R.drawable.not_connected);
-                        setSeekerStatus(false);
+//                        setSeekerStatus(false);
                     }
 
                     @Override
@@ -196,7 +196,7 @@ public class MainActivity extends Activity {
                     public void doOnDisconnect() {
                         getActionBar().setIcon(R.drawable.not_connected);
                         genericDialog("Disconnected!", R.drawable.not_connected);
-                        setSeekerStatus(false);
+//                        setSeekerStatus(false);
                     }
                 });
             }
@@ -296,8 +296,8 @@ public class MainActivity extends Activity {
             }
         });
 
-        // Seekers are disabled until connected
-        setSeekerStatus(false);
+
+        setSeekerStatus(true);
 
         setBitBoxColor();
 
@@ -365,7 +365,7 @@ public class MainActivity extends Activity {
     protected void onNewIntent(Intent intent) {
         Tag tag = intent.getParcelableExtra(NfcAdapter.EXTRA_TAG);
         if (tag.getId() == null) {
-            Toast.makeText(this,"Bad NFC!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Null ID for NFC tag!", Toast.LENGTH_SHORT).show();
             return;
         }
         String tagString = Arrays.toString(tag.getId());
@@ -376,7 +376,7 @@ public class MainActivity extends Activity {
             favoriteHelper.execute();
         }
         else {
-            Toast.makeText(this,"Unrecognized NFC!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Unrecognized NFC tag!", Toast.LENGTH_SHORT).show();
         }
     }
 
